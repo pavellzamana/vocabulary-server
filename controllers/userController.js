@@ -19,7 +19,6 @@ class UserController {
         try {
             const {email, login, password} = req.body;
             const hashPassword = await bcrypt.hash(password, 3);
-            console.log(hashPassword);
             await userServiceDB.addUser(email, login, hashPassword);
             const token = await generateJwt(login, next);
             return res.json({token});
