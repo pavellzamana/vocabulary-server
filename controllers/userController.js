@@ -1,5 +1,4 @@
 const ApiError = require('../error/ApiError');
-const {User} = require('../models/models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const userServiceDB = require('../services/userServiceDB');
@@ -23,14 +22,14 @@ class UserController {
             const token = await generateJwt(login, next);
             return res.json({token});
         } catch (e) {
-            return next(ApiError.internalError());
+            return next(ApiError.internalError(e.message));
         }
     }
 
-    async login(err, req, res, next) {
+    async login(req, res, next) {
         try {
             const {login, password} = req.body;
-            const user = await User.findOne({where: {login}});
+            const user = await userServiceDB.getUserFromDB(login);
             if (!user) {
                 return next(ApiError.authError('User not found'));
             }
@@ -41,7 +40,7 @@ class UserController {
             const token = await generateJwt(login);
             return (res.json({token}));
         } catch (e) {
-            return next(ApiError.internalError());
+            return next(ApiError.internalError(e.message));
         }
     }
 }

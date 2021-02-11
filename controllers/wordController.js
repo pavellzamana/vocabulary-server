@@ -14,7 +14,7 @@ class WordController {
             await wordsServiceDB.addWordToDB(id, word, transcription, translation, user_id);
             return res.json('Word added to database');
         } catch (e) {
-            return next(ApiError.internalError())
+            return next(ApiError.internalError(e.message))
         }
     }
 
@@ -24,7 +24,7 @@ class WordController {
             await wordsServiceDB.updateWordToDB(id, word, transcription, translation, user_id);
             return res.json('Word updated successfully');
         } catch (e) {
-            return next(ApiError.internalError());
+            return next(ApiError.internalError(e.message));
         }
     }
 
@@ -34,7 +34,7 @@ class WordController {
             await wordsServiceDB.deleteWordFromDB(id);
             return res.json('Word deleted successfully');
         } catch (e) {
-            return next(ApiError.internalError());
+            return next(ApiError.internalError(e.message));
         }
     }
 }
