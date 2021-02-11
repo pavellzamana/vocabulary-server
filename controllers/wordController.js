@@ -1,5 +1,5 @@
 const ApiError = require('../error/ApiError');
-const wordsServiceDB = require('../services/wordServiceDB')
+const wordsServiceDB = require('../services/wordServiceDB');
 
 class WordController {
     async getWords(req, res) {
@@ -14,7 +14,7 @@ class WordController {
             await wordsServiceDB.addWordToDB(id, word, transcription, translation, user_id);
             return res.json('Word added to database');
         } catch (e) {
-            return next(ApiError.internalError(e.message))
+            return next(ApiError.internalError(e.message));
         }
     }
 

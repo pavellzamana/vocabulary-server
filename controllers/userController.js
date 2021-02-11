@@ -4,8 +4,8 @@ const jwt = require('jsonwebtoken');
 const userServiceDB = require('../services/userServiceDB');
 
 const generateJwt = async (login, next) => {
-    const userid = await userServiceDB.getUserFromDB(login);
-    const token = jwt.sign({id: userid.id, login, email: userid.email}, process.env.SECRET_KEY, {
+    const userId = await userServiceDB.getUserFromDB(login);
+    const token = jwt.sign({id: userId.id, login, email: userId.email}, process.env.SECRET_KEY, {
         expiresIn: "48h"});
     if (!token) {
         return next(ApiError.internalError('Error generating token. Please try again'));
