@@ -13,10 +13,7 @@ class ApiError {
     }
 
     static errorHandling(err, req, res, next) {
-        if (err instanceof ApiError) {
-            return res.status(err.status).json({message: err.message});
-        }
-        return next(ApiError.internalError('Unexpected Error'));
+        return res.status(err.status).json({message: err.message});
     }
 }
 
