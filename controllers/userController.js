@@ -17,6 +17,11 @@ class UserController {
     async registration(req, res, next) {
         try {
             const {email, login, password} = req.body;
+            const userExists = await userServiceDB.getUserFromDB(login);
+            const emailExists = await userServiceDB.getUserFromDB(email);
+            if (userExists || emailExists) {
+                return next(ApiError.authError('User already exists'));
+            }
             const hashPassword = await bcrypt.hash(password, 3);
             await userServiceDB.addUser(email, login, hashPassword);
             const token = await generateJwt(login, next);
