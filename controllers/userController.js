@@ -1,0 +1,53 @@
+const ApiError = require('../error/ApiError');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const userServiceDB = require('../services/userServiceDB');
+
+const generateJwt = async (login, next) => {
+    const userId = await userServiceDB.getUserFromDB(login);
+    const token = jwt.sign({id: userId.id, login, email: userId.email}, process.env.SECRET_KEY, {
+        expiresIn: "48h"});
+    if (!token) {
+        return next(ApiError.internalError('Error generating token. Please try again'));
+    }
+    return token;
+}
+
+class UserController {
+    async registration(req, res, next) {
+        try {
+            const {email, login, password} = req.body;
+            const userExists = await userServiceDB.getUserFromDB(login);
+            const emailExists = await userServiceDB.getUserFromDB(email);
+            if (userExists || emailExists) {
+                return next(ApiError.authError('User already exists'));
+            }
+            const hashPassword = await bcrypt.hash(password, 3);
+            await userServiceDB.addUser(email, login, hashPassword);
+            const token = await generateJwt(login, next);
+            return res.json({token});
+        } catch (e) {
+            return next(ApiError.internalError(e.message));
+        }
+    }
+
+    async login(req, res, next) {
+        try {
+            const {login, password} = req.body;
+            const user = await userServiceDB.getUserFromDB(login);
+            if (!user) {
+                return next(ApiError.authError('User not found'));
+            }
+            let comparePass = bcrypt.compareSync(password, user.password);
+            if (!comparePass) {
+                return next(ApiError.authError('Invalid credentials'));
+            }
+            const token = await generateJwt(login);
+            return (res.json({token}));
+        } catch (e) {
+            return next(ApiError.internalError(e.message));
+        }
+    }
+}
+
+module.exports = new UserController();
