@@ -3,8 +3,8 @@ const wordsServiceDB = require('../services/wordServiceDB');
 
 class WordController {
     async getWords(req, res) {
-        const {user_id} = req.body;
-        const words = await wordsServiceDB.getWordsFromDB(user_id);
+        const {userId} = req.body;
+        const words = await wordsServiceDB.getWordsFromDB(userId);
         return res.json(words);
     }
 
