@@ -2,7 +2,7 @@ services:
   nginx:
     image: nginx:1.13
     volumes:
-      - ./client/build:/usr/share/nginx/html
+      - ./vocabulary-client/build:/usr/share/nginx/html
     ports:
       - 8080:80
     depends_on:
